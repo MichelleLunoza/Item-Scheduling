@@ -158,7 +158,7 @@ def manage_records()
 			  			(b_name, b_date,  b_item, b_item_id, b_count, b_status) 
 			   			VALUES 
 			  			('#{b_name}','#{b_date}','#{b_item}','#{b_item_id}','#{b_count}','#{b_status}')")
-			puts "\n" + total.to_s
+
 			# subtract borrower count from items_tb
 			$client.query("UPDATE items_tb SET item_bcount = '#{total}' WHERE id = '#{b_item_id}'")
 			# Successfully Added New record			
@@ -200,6 +200,9 @@ def manage_records()
 				# call manageg items
 				manage_records
 			else
+				temp_item_id = ""
+				temp_total = ""
+
 				puts "\nReturned Item Count: "
 				b_count =  gets.chomp
 				
@@ -207,23 +210,41 @@ def manage_records()
 					if "#{row['id']}" == input_id
 						# get count of items in records table
 						temp_bcount = "#{row['b_count']}"
+						temp_item_id = "#{row['b_item_id']}"
 					end
 				end
 
 
 				if b_count == temp_bcount
 					b_status = "COMPLETE"
-				elsif b_count > temp_bcount
+					# Display Status
+					puts "\nStatus:\n" + b_status
+
+					# Update records db
+					$client.query("UPDATE records_tb SET b_status = '#{b_status}', b_return = '#{b_return}' WHERE id = '#{input_id}'")
+
+					# Update items
+					result = $client.query("SELECT * FROM items_tb WHERE id = '#{temp_item_id}'") 
+					result.each do |row|
+						# Get total borrowed count from items_tb
+						temp_total =  "#{row['item_bcount']}"
+					end
+
+					temp_total = temp_total.to_i - b_count.to_i
+					# Update items_tb
+					$client.query("UPDATE items_tb SET item_bcount = '#{temp_total}' WHERE id = '#{temp_item_id}'")
+					puts "\nSuccessfully Updated \n\nPress Enter to continue . . ."
+					gets
+					manage_records
+
+				elsif b_count > temp_bcount || b_count < temp_bcount
 					puts "\nReturned count is invalid"
 					puts "\n\nPress Enter to continue . . ."
 					gets 
 					# call manage records function
 					manage_records
 				end
-				# Display Status
-				puts "\nStatus:\n" + b_status
 
-				$client.query("UPDATE records_tb SET b_status = '#{b_status}', b_return = '#{b_return}' WHERE id = '#{input_id}'")
 			end
 
 	end
