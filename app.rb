@@ -73,7 +73,7 @@ def manage_items()
 	cmd  = ""
 	menu_choice = ""
 	puts "\n\n*** Welcome to Item Scheduling System *** \n\n"
-	puts "What would you like?  (a)Add, (b)Update, (c)Delete , (d)View Items"
+	puts "What would you like?  (a)Add, (b)Update, (c)Delete , (d)View Items ,(e)Main Menu"
 	menu_choice = gets.chomp
 	
 	case menu_choice.upcase
@@ -126,7 +126,7 @@ def manage_items()
 			 end
 
 		when 'C'
-			all_items = $client.query('SELECT * FROM items_tb');
+			 all_items = $client.query('SELECT * FROM items_tb');
 			 data = []
 			 header = ['ID', 'ITEM NAME' ,'ITEM COUNT']
 			 all_items.each do |row|
@@ -153,6 +153,23 @@ def manage_items()
 				# call manageg items
 				manage_items
 			 end
+		when 'D'
+			 all_items = $client.query('SELECT * FROM items_tb');
+			 data = []
+			 header = ['ID', 'ITEM NAME' ,'ITEM COUNT']
+			 all_items.each do |row|
+			 	temp = ["#{row['id']}","#{row['item_name']}","#{row['item_count']}"]
+			 	data.push(temp)
+			 end
+			 data.unshift(header)
+			 puts data.to_table(:first_row_is_head => true, :last_row_is_foot => false)
+			 puts "\nPress Enter to continue . . ."
+			 gets
+			# call manageg items
+			manage_items
+		when 'E'
+			# back to main program
+			main_program
 		else
 			# call invalid message function
 			invalid_message
