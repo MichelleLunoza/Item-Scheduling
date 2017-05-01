@@ -50,7 +50,7 @@ def admin_menu()
 	cmd  = ""
 	menu_choice = ""
 	puts "\n\n*** Welcome to Item Scheduling System *** \n\n"
-	puts "What would you like? (a) Manage Items,  (b) Manage Schedule?"
+	puts "What would you like? (a) Manage Items,  (b) Manage Schedule? ,(c) Main Menu"
 	menu_choice = gets.chomp
 	
 	case menu_choice.upcase
@@ -58,14 +58,29 @@ def admin_menu()
 			# call manage items function
 			manage_items
 		when "B"
-
+			# call manage schedule function
+			manage_schedule
+		when "C"
+			# call admin menu function
+			main_program
 		else
 			# call invalid message
 			invalid_message
+			admin_menu
 	end
 
 end
 
+# Manage Schedule function =====================================================================
+def manage_schedule()
+	system "clear"
+	cmd  = ""
+	menu_choice = ""
+	puts "\n\n*** Welcome to Item Scheduling System *** \n\n"
+	puts "What would you like?  (a) Add Schedule, (b) Update Schedule, (c) Delete Schedule , (d) View Schedule ,(e) Main Menu"
+	menu_choice = gets.chomp
+
+end
 
 # Manage Items function ========================================================================
 def manage_items()
@@ -73,7 +88,7 @@ def manage_items()
 	cmd  = ""
 	menu_choice = ""
 	puts "\n\n*** Welcome to Item Scheduling System *** \n\n"
-	puts "What would you like?  (a)Add, (b)Update, (c)Delete , (d)View Items ,(e)Main Menu"
+	puts "What would you like?  (a) Add, (b) Update, (c) Delete , (d) View Items ,(e) Main Menu"
 	menu_choice = gets.chomp
 	
 	case menu_choice.upcase
@@ -186,12 +201,12 @@ def main_program()
 	cmd  = ""
 	menu_choice = ""
 	puts "\n\n*** Welcome to Item Scheduling System *** \n\n"
-	puts "What would you like? Admin User, View Schedule, Exit?"
+	puts "What would you like? (a) Admin User, (b) View Schedule, (c) Exit?"
 	menu_choice = gets.chomp
 
 	# verify menu input
 	case menu_choice.upcase
-		when 'ADMIN USER'
+		when 'A'
 			# call login function
 			admin_account_login
 
