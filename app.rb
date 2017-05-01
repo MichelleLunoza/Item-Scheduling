@@ -124,6 +124,35 @@ def manage_items()
 				# call manageg items
 				manage_items
 			 end
+
+		when 'C'
+			all_items = $client.query('SELECT * FROM items_tb');
+			 data = []
+			 header = ['ID', 'ITEM NAME' ,'ITEM COUNT']
+			 all_items.each do |row|
+			 	temp = ["#{row['id']}","#{row['item_name']}","#{row['item_count']}"]
+			 	data.push(temp)
+			 end
+			 data.unshift(header)
+			 puts data.to_table(:first_row_is_head => true, :last_row_is_foot => false)
+
+			 id = ""
+			 puts "\n\nEnter ID:"
+			 input_id = gets.chomp
+
+			 result = $client.query("SELECT * FROM items_tb WHERE id = #{input_id}")
+			 if result.count == 0
+			 	puts "\n\nNo record found !!!"
+			 	gets
+				# call manageg items
+				manage_items
+			 else
+			 	puts "\nSuccessfully DELETED \n\nPress Enter to continue . . ."
+			 	$client.query("DELETE FROM items_tb WHERE id = '#{input_id}'")
+			 	gets
+				# call manageg items
+				manage_items
+			 end
 		else
 			# call invalid message function
 			invalid_message
