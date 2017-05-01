@@ -2,7 +2,7 @@
 simple program created in ruby. It's all about scheduling of items in BSU
 
 <br/>
-### List of Dependencies
+# List of Dependencies
 
 1. highline
 2. tex-table
