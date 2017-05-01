@@ -7,6 +7,8 @@ require 'highline/import'
 require 'mysql2'
 # pretty table
 require 'text-table'
+# date
+require 'date'
 
 # admin accoount login function ===============================================================
 def admin_account_login()
@@ -50,7 +52,7 @@ def admin_menu()
 	cmd  = ""
 	menu_choice = ""
 	puts "\n\n*** Welcome to Item Scheduling System *** \n\n"
-	puts "What would you like? (a) Manage Items,  (b) Manage Schedule? ,(c) Main Menu"
+	puts "What would you like? (a) Manage Items,  (b) Manage Records? ,(c) Main Menu"
 	menu_choice = gets.chomp
 	
 	case menu_choice.upcase
@@ -76,9 +78,28 @@ def manage_schedule()
 	system "clear"
 	cmd  = ""
 	menu_choice = ""
-	puts "\n\n*** Welcome to Item Scheduling System *** \n\n"
-	puts "What would you like?  (a) Add Schedule, (b) Update Schedule, (c) Delete Schedule , (d) View Schedule ,(e) Main Menu"
+	puts "\n\n*** Welcome to Borrowing Record System *** \n\n"
+	puts "What would you like?  (a) Add Record, (b) Update Record, (c) Delete Record , (d) View Record ,(e) Main Menu"
 	menu_choice = gets.chomp
+
+	case menu_choice.upcase 
+		when 'A'
+			b_name = ""
+			strdate = Time.now.to_s
+			b_time = DateTime.parse(strdate).strftime("%I:%M:%S %p")
+			b_date = DateTime.parse(strdate).strftime("%d/%m/%Y")
+			pieces = ""
+			status = ""
+			puts "\nEnter Name: (Last Name , First Name, Middle Initial)"
+			fullname = gets.chomp
+			puts "\nDate:\n" +  b_date
+			puts "\nTime:\n" + b_time
+
+			
+
+
+
+	end
 
 end
 
@@ -87,7 +108,7 @@ def manage_items()
 	system "clear"
 	cmd  = ""
 	menu_choice = ""
-	puts "\n\n*** Welcome to Item Scheduling System *** \n\n"
+	puts "\n\n*** Welcome to Borrowing Record System *** \n\n"
 	puts "What would you like?  (a) Add, (b) Update, (c) Delete , (d) View Items ,(e) Main Menu"
 	menu_choice = gets.chomp
 	
@@ -95,11 +116,13 @@ def manage_items()
 		when 'A'
 			item_name = ""
 			item_count = ""
+			item_bcount = 0
 			puts "\nEnter Item Name:"
 			item_name = gets.chomp
 			puts "\nEnter Item Count:"
 			item_count = gets.chomp
-			$client.query("INSERT INTO items_tb (item_name, item_count) VALUES ('#{item_name}','#{item_count}')")
+
+			$client.query("INSERT INTO items_tb (item_name, item_count, item_bcount) VALUES ('#{item_name}','#{item_count}','#{item_bcount}')")
 			puts "\nSuccessfully Added \n\nPress Enter to continue . . ."
 			gets
 			# call manageg items
@@ -107,9 +130,9 @@ def manage_items()
 		when 'B'
 			 all_items = $client.query('SELECT * FROM items_tb');
 			 data = []
-			 header = ['ID', 'ITEM NAME' ,'ITEM COUNT']
+			 header = ['ID', 'ITEM NAME' ,'ITEM COUNT','ITEM BORROWED']
 			 all_items.each do |row|
-			 	temp = ["#{row['id']}","#{row['item_name']}","#{row['item_count']}"]
+			 	temp = ["#{row['id']}","#{row['item_name']}","#{row['item_count']}","#{row['item_bcount']}"]
 			 	data.push(temp)
 			 end
 			 data.unshift(header)
@@ -128,12 +151,16 @@ def manage_items()
 			 else
 			 	update_name = ""
 			 	update_count = ""
+			 	update_bcount = ""
 			 	puts "\nEnter Item Name:"
 			 	update_name = gets.chomp
 			 	puts "\nEnter Item Count"
 			 	update_count = gets.chomp
+			 	puts "\nEnter Item Borrowed Count"
+			 	update_bcount = gets.chomp
+
 			 	puts "\nSuccessfully Updated \n\nPress Enter to continue . . ."
-			 	$client.query("UPDATE items_tb SET item_name = '#{update_name}', item_count = '#{update_count}' WHERE id = '#{input_id}' ")
+			 	$client.query("UPDATE items_tb SET item_name = '#{update_name}', item_count = '#{update_count}', item_bcount = '#{update_bcount}' WHERE id = '#{input_id}' ")
 
 			 	gets
 				# call manageg items
@@ -143,9 +170,9 @@ def manage_items()
 		when 'C'
 			 all_items = $client.query('SELECT * FROM items_tb');
 			 data = []
-			 header = ['ID', 'ITEM NAME' ,'ITEM COUNT']
+			 header = ['ID', 'ITEM NAME' ,'ITEM COUNT','ITEM BORROWED']
 			 all_items.each do |row|
-			 	temp = ["#{row['id']}","#{row['item_name']}","#{row['item_count']}"]
+			 	temp = ["#{row['id']}","#{row['item_name']}","#{row['item_count']}","#{row['item_bcount']}"]
 			 	data.push(temp)
 			 end
 			 data.unshift(header)
@@ -171,9 +198,9 @@ def manage_items()
 		when 'D'
 			 all_items = $client.query('SELECT * FROM items_tb');
 			 data = []
-			 header = ['ID', 'ITEM NAME' ,'ITEM COUNT']
+			 header = ['ID', 'ITEM NAME' ,'ITEM COUNT','ITEM BORROWED']
 			 all_items.each do |row|
-			 	temp = ["#{row['id']}","#{row['item_name']}","#{row['item_count']}"]
+			 	temp = ["#{row['id']}","#{row['item_name']}","#{row['item_count']}","#{row['item_bcount']}"]
 			 	data.push(temp)
 			 end
 			 data.unshift(header)
@@ -200,8 +227,8 @@ def main_program()
 	system 'clear'
 	cmd  = ""
 	menu_choice = ""
-	puts "\n\n*** Welcome to Item Scheduling System *** \n\n"
-	puts "What would you like? (a) Admin User, (b) View Schedule, (c) Exit?"
+	puts "\n\n*** Welcome to Borrowing Record System *** \n\n"
+	puts "What would you like? (a) Admin User, (b) View Records, (c) Exit?"
 	menu_choice = gets.chomp
 
 	# verify menu input
@@ -226,13 +253,15 @@ $client.query("CREATE TABLE IF NOT EXISTS records_tb
 			b_date DATE NOT NULL,
 			b_time TIME NOT NULL,
 			b_item VARCHAR(50) NOT NULL,
-			b_pieces VARCHAR(50) NOT NULL
+			b_count VARCHAR(50) NOT NULL,
+			b_status VARCHAR(50) NOT NULL
 			)")
 
 $client.query("CREATE TABLE IF NOT EXISTS items_tb 
 			(id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
 			 item_name VARCHAR(50) NOT NULL,
-			 item_count INTEGER 
+			 item_count INTEGER,
+			 item_bcount INTEGER
 			)")
 
 
