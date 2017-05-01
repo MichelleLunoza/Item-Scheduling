@@ -1,4 +1,7 @@
+# Mask password input
 require 'highline/import'
+# Mysql 
+require 'mysql2'
 
 # admin accoount login function
 def admin_account_login()
@@ -12,7 +15,8 @@ def admin_account_login()
 
 
   if(passwordEntry == password)
-
+  	# call admin menu
+  	admin_menu
   else
   	# call invalid password message
   	invalid_password
@@ -20,7 +24,7 @@ def admin_account_login()
 
 end
 
-# show globally ivnvalide message
+# show globally ivnvalid message
 def invalid_message()
 	press = ""
 	puts "Invalid Input !!! \n\nPress ENTER to continue . . . "
@@ -35,6 +39,16 @@ def invalid_password()
 	main_program
 end
 
+# function for displaying menu admin
+def admin_menu()
+	system 'clear'
+	cmd  = ""
+	menu_choice = ""
+	puts "\n\n*** Welcome to Item Scheduling System *** \n\n"
+	puts "What would you like? Add, Update, Delete, View Schedule?"
+	menu_choice = gets.chomp
+
+end
 
 # Main System Function()
 def main_program()
