@@ -87,12 +87,12 @@ def manage_records()
 			# intialize variables and date with time
 			b_name = ""
 			strdate = Time.now.to_s
-			b_time = DateTime.parse(strdate).strftime("%H:%M:%S")
-			b_date = DateTime.parse(strdate).strftime("%Y-%m-%d")
+			b_return = ""#DateTime.parse(strdate).strftime("%H:%M:%S")
+			b_date = DateTime.parse(strdate).strftime("%Y-%m-%d %I:%M:%S")
 			b_count = ""
 			b_item = ""
 			b_item_id = ""
-			b_status = "OUT"
+			b_status = "INCOMPLETE"
 
 			temp_bcount = ""
 			temp_count = ""
@@ -101,7 +101,7 @@ def manage_records()
 			b_name = gets.chomp
 			b_name = b_name.upcase
 			puts "\nDate:\n" +  b_date
-			puts "\nTime:\n" + b_time
+			#puts "\nTime:\n" + b_time
 
 
 			# display items table
@@ -151,13 +151,13 @@ def manage_records()
 
 			# Update current total item_bcount
 			total = temp_bcount.to_i + b_count.to_i 
-			puts "\nStatus : \n" + b_status 
+			puts "\nStatus: \n" + b_status 
 
 			# add data to records_tb
 			$client.query("INSERT INTO records_tb 
-			  			(b_name, b_date, b_time, b_item, b_item_id, b_count, b_status) 
+			  			(b_name, b_date,  b_item, b_item_id, b_count, b_status) 
 			   			VALUES 
-			  			('#{b_name}','#{b_date}','#{b_time}','#{b_item}','#{b_item_id}','#{b_count}','#{b_status}')")
+			  			('#{b_name}','#{b_date}','#{b_item}','#{b_item_id}','#{b_count}','#{b_status}')")
 			puts "\n" + total.to_s
 			# subtract borrower count from items_tb
 			$client.query("UPDATE items_tb SET item_bcount = '#{total}' WHERE id = '#{b_item_id}'")
@@ -166,6 +166,65 @@ def manage_records()
 			gets
 			# call manage_records function to back to its menu
 			manage_records
+	when 'B'
+			# Get all items from records_tb
+			all_items = $client.query('SELECT * FROM records_tb');
+			 
+			# Initialize array  for displaying the data to table
+			data = []
+
+			# Initialize header array for table
+			header = ['ID', 'BORROWER' ,'DATE BORROWED','DATE RETURNED','ITEM BORROWED','ITEM ID','ITEM COUNT','ITEM STATUS']
+			all_items.each do |row|
+			 	# Once we query all the data from items_tb
+			 	# We need to format the data to array, because the data from array is in JSON like format
+			 	# But in PHP usage format
+			 	# Line below is the formatting the data to ruby readable array
+			 	temp = ["#{row['id']}","#{row['b_name']}","#{row['b_date']}","#{row['b_return']}","#{row['b_item']}","#{row['b_item_id']}","#{row['b_count']}","#{row['b_status']}"]
+			 	data.push(temp)
+			 end
+			 data.unshift(header)
+			 puts data.to_table(:first_row_is_head => true, :last_row_is_foot => false)
+			 strdate = Time.now.to_s
+			 b_return = DateTime.parse(strdate).strftime("%Y-%m-%d %I:%M:%S")
+			 input_id = ""
+			 b_status = ""
+			 b_count = ""
+			 puts "\n\nEnter ID:"
+			 input_id = gets.chomp
+
+			 result = $client.query("SELECT * FROM records_tb WHERE id = '#{input_id}'")
+			 if result.count == 0
+			 	puts "\n\nNo record found !!!"
+			 	gets
+				# call manageg items
+				manage_records
+			else
+				puts "\nReturned Item Count: "
+				b_count =  gets.chomp
+				
+				result.each do |row|
+					if "#{row['id']}" == input_id
+						# get count of items in records table
+						temp_bcount = "#{row['b_count']}"
+					end
+				end
+
+
+				if b_count == temp_bcount
+					b_status = "COMPLETE"
+				elsif b_count > temp_bcount
+					puts "\nReturned count is invalid"
+					puts "\n\nPress Enter to continue . . ."
+					gets 
+					# call manage records function
+					manage_records
+				end
+				# Display Status
+				puts "\nStatus:\n" + b_status
+
+				$client.query("UPDATE records_tb SET b_status = '#{b_status}', b_return = '#{b_return}' WHERE id = '#{input_id}'")
+			end
 
 	end
 
@@ -336,8 +395,8 @@ $client = Mysql2::Client.new(:host => "localhost", :username => "root", :databas
 $client.query("CREATE TABLE IF NOT EXISTS records_tb 
 			(id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, 
 			b_name VARCHAR(50) NOT NULL,
-			b_date DATE NOT NULL,
-			b_time TIME NOT NULL,
+			b_date DATETIME NOT NULL,
+			b_return DATETIME,
 			b_item VARCHAR(50) NOT NULL,
 			b_item_id VARCHAR(50) NOT NULL,
 			b_count VARCHAR(50) NOT NULL,
