@@ -384,6 +384,12 @@ def manage_items()
 
 end
 
+
+
+
+
+
+
 # Main System Function() =======================================================================
 def main_program()
 	# better to see isolated program with clear screens
@@ -399,7 +405,29 @@ def main_program()
 		when 'A'
 			# call login function
 			admin_account_login
-
+		when 'B'
+			# Get all items from records_tb
+			all_items = $client.query('SELECT * FROM records_tb'); 
+			# Initialize array  for displaying the data to table
+			data = []
+			# Initialize header array for table
+			header = ['ID', 'BORROWER' ,'DATE BORROWED','DATE RETURNED','ITEM BORROWED','ITEM ID','ITEM COUNT','ITEM STATUS']
+			all_items.each do |row|
+			 	# Once we query all the data from items_tb
+			 	# We need to format the data to array, because the data from array is in JSON like format
+			 	# But in PHP usage format
+			 	# Line below is the formatting the data to ruby readable array
+			 	temp = ["#{row['id']}","#{row['b_name']}","#{row['b_date']}","#{row['b_return']}","#{row['b_item']}","#{row['b_item_id']}","#{row['b_count']}","#{row['b_status']}"]
+			 	data.push(temp)
+			 end
+			 data.unshift(header)
+			 puts data.to_table(:first_row_is_head => true, :last_row_is_foot => false)
+			 puts "\n\nPress any key to continue . . ."
+			 gets
+			 # call main program function
+			 main_program
+		when 'C'
+			system 'exit'
 		else
 			# call invalid message function
 			invalid_message
