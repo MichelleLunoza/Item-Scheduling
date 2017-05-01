@@ -45,8 +45,15 @@ def admin_menu()
 	cmd  = ""
 	menu_choice = ""
 	puts "\n\n*** Welcome to Item Scheduling System *** \n\n"
-	puts "What would you like? Add, Update, Delete, View Schedule?"
+	puts "What would you like? Add, Update, Delete, View Items, View Schedule?"
 	menu_choice = gets.chomp
+	
+	case menu_choice.upcase 
+
+	when "ADD"
+
+		
+	end
 
 end
 
@@ -73,7 +80,28 @@ def main_program()
 end
 
 
+
+# Make clinet variable  global
+$client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "ruby_db")
+$client.query("CREATE TABLE IF NOT EXISTS records_tb 
+			(id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+			b_name VARCHAR(50) NOT NULL,
+			b_date DATE NOT NULL,
+			b_time TIME NOT NULL,
+			b_item VARCHAR(50) NOT NULL,
+			b_pieces VARCHAR(50) NOT NULL
+			)")
+
+$client.query("CREATE TABLE IF NOT EXISTS items_tb 
+			(id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+			 item_name VARCHAR(50) NOT NULL,
+			 item_count INTEGER 
+			)")
+
+
 # call the main program function
-main_program
+#main_program
+
+admin_menu
 
 
